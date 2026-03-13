@@ -1,15 +1,45 @@
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>QR Code Demo with Firebase v9</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+  <h1>雲端 QR Code 測試 (v9)</h1>
+  <div id="qrcode"></div>
 
-  const firebaseConfig = { ...你的設定... };
+  <!-- 使用 ES Module -->
+  <script type="module">
+    // 從 Firebase v9 模組化 SDK 引入需要的功能
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+    // 🔧 貼上你的 FirebaseConfig
+    const firebaseConfig = {
+      apiKey: "AIzaSyD-isk0_uKCxKpjECLCtRGcJxcovVMLiw",
+      authDomain: "qrcode1-edd06.firebaseapp.com",
+      databaseURL: "https://qrcode1-edd06-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "qrcode1-edd06",
+      storageBucket: "qrcode1-edd06.appspot.com",
+      messagingSenderId: "358063648876",
+      appId: "1:358063648876:web:ca24100ee254e026776849",
+      measurementId: "G-SRTVH98JVX"
+    };
 
-  onValue(ref(db, "current_qr"), (snapshot) => {
-    let content = snapshot.val();
-    document.getElementById("qrcode").innerHTML = "";
-    new QRCode(document.getElementById("qrcode"), content);
-  });
-</script>
+    // 初始化 Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // 監聽資料庫的 current_qr 欄位
+    const qrRef = ref(db, "current_qr");
+    onValue(qrRef, (snapshot) => {
+      let content = snapshot.val();
+      document.getElementById("qrcode").innerHTML = ""; // 清空舊的 QR
+      if (content) {
+        new QRCode(document.getElementById("qrcode"), content);
+      }
+    });
+  </script>
+</body>
+</html>

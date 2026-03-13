@@ -2,17 +2,39 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>QR Code Demo</title>
+  <title>QR Code Demo with Firebase</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
 </head>
 <body>
-  <h1>動態 QR Code 測試</h1>
+  <h1>雲端 QR Code 測試</h1>
   <div id="qrcode"></div>
 
   <script>
-    // 模擬動態內容（每次刷新會不同）
-    let content = "會員碼-" + Math.floor(Math.random() * 10000);
-    new QRCode(document.getElementById("qrcode"), content);
+    // 🔧 貼上你的 FirebaseConfig
+    const firebaseConfig = {
+      apiKey: "AIzaSyD-isk0_uKCxKpjECLCtRGcJxcovVMLiw",
+      authDomain: "qrcode1-edd06.firebaseapp.com",
+      databaseURL: "https://qrcode1-edd06-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "qrcode1-edd06",
+      storageBucket: "qrcode1-edd06.appspot.com",
+      messagingSenderId: "358063648876",
+      appId: "1:358063648876:web:ca24100ee254e026776849",
+      measurementId: "G-SRTVH98JVX"
+    };
+
+    // 初始化 Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // 監聽資料庫的 current_qr 欄位
+    db.ref("current_qr").on("value", (snapshot) => {
+      let content = snapshot.val();
+      document.getElementById("qrcode").innerHTML = ""; // 清空舊的 QR
+      new QRCode(document.getElementById("qrcode"), content);
+    });
   </script>
 </body>
 </html>
+

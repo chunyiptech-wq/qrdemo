@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>QR Code Demo</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+  <h1>動態 QR Code 測試</h1>
+  <div id="qrcode"></div>
+
+  <script>
+    // 模擬動態內容（每次刷新會不同）
+    let content = "會員碼-" + Math.floor(Math.random() * 10000);
+    new QRCode(document.getElementById("qrcode"), content);
+  </script>
+</body>
+</html>

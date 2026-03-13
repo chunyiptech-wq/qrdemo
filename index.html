@@ -2,20 +2,17 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>QR Code Demo with Firebase + Qrious</title>
-  <!-- 引入 qrious 套件 -->
+  <title>多店舖 QR Code Demo</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 </head>
 <body>
-  <h1>雲端 QR Code 測試 (Qrious)</h1>
-  <canvas id="qrcode"></canvas>
+  <h1>雲端多店舖 QR Code</h1>
+  <div id="qrcodes"></div>
 
-  <!-- 使用 ES Module -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-    // 🔧 貼上你的 FirebaseConfig
     const firebaseConfig = {
       apiKey: "AIzaSyD-isk0_uKCxKpjECLCtRGcJxcovVMLiw",
       authDomain: "qrcode1-edd06.firebaseapp.com",
@@ -27,24 +24,45 @@
       measurementId: "G-SRTVH98JVX"
     };
 
-    // 初始化 Firebase
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // 監聽資料庫的 current_qr 欄位
-    const qrRef = ref(db, "current_qr");
-    onValue(qrRef, (snapshot) => {
-      let content = snapshot.val();
-      if (content) {
-        // 使用 qrious 生成 QR Code
-        const qr = new QRious({
-          element: document.getElementById("qrcode"),
-          value: content,
-          size: 300,   // QR Code 大小
-          level: 'H'   // 容錯率 (L, M, Q, H)，H 可以容納更多字元
+    // 監聽 stores 節點
+    const storesRef = ref(db, "stores");
+    onValue(storesRef, (snapshot) => {
+      const data = snapshot.val();
+      const container = document.getElementById("qrcodes");
+      container.innerHTML = ""; // 清空舊的內容
+
+      if (data) {
+        Object.keys(data).forEach((key) => {
+          const store = data[key];
+
+          // 建立一個區塊
+          const block = document.createElement("div");
+          block.style.marginBottom = "20px";
+
+          // 建立 canvas 元素
+          const canvas = document.createElement("canvas");
+          block.appendChild(canvas);
+
+          // 建立說明文字
+          const label = document.createElement("p");
+          label.innerText = store.label;
+          block.appendChild(label);
+
+          // 生成 QR Code
+          new QRious({
+            element: canvas,
+            value: store.code,
+            size: 200,
+            level: 'H'
+          });
+
+          container.appendChild(block);
         });
       } else {
-        document.getElementById("qrcode").innerText = "⚠️ 沒有找到 current_qr 資料";
+        container.innerText = "⚠️ 沒有找到任何店舖資料";
       }
     });
   </script>

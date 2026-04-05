@@ -1,70 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <title>多店舖 QR Code Demo</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>A1 會員專區</title>
+    <style>
+        body, html { height: 100%; margin: 0; background: #000; color: #fff; font-family: sans-serif; overflow: hidden; }
+        #login { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; }
+        input { width: 70%; padding: 15px; border-radius: 12px; border: 1px solid #444; background: #222; color: #fff; font-size: 18px; margin-bottom: 20px; text-align: center; }
+        button { width: 75%; padding: 15px; border-radius: 12px; border: none; background: #e84118; color: white; font-size: 18px; font-weight: bold; }
+        #qr-view { display: none; width: 100vw; height: 100vh; }
+        #qr-img { width: 100%; height: 100%; object-fit: cover; }
+    </style>
 </head>
 <body>
-  <h1>雲端多店舖 QR Code</h1>
-  <div id="qrcodes"></div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyD-isk0_uKCxKpjECLCtRGcJxcovVMLiw",
-      authDomain: "qrcode1-edd06.firebaseapp.com",
-      databaseURL: "https://qrcode1-edd06-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "qrcode1-edd06",
-      storageBucket: "qrcode1-edd06.appspot.com",
-      messagingSenderId: "358063648876",
-      appId: "1:358063648876:web:ca24100ee254e026776849",
-      measurementId: "G-SRTVH98JVX"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    // 監聽 stores 節點
-    const storesRef = ref(db, "stores");
-    onValue(storesRef, (snapshot) => {
-      const data = snapshot.val();
-      const container = document.getElementById("qrcodes");
-      container.innerHTML = ""; // 清空舊的內容
-
-      if (data) {
-        Object.keys(data).forEach((key) => {
-          const store = data[key];
-
-          // 建立一個區塊
-          const block = document.createElement("div");
-          block.style.marginBottom = "20px";
-
-          // 建立 canvas 元素
-          const canvas = document.createElement("canvas");
-          block.appendChild(canvas);
-
-          // 建立說明文字
-          const label = document.createElement("p");
-          label.innerText = store.label;
-          block.appendChild(label);
-
-          // 生成 QR Code
-          new QRious({
-            element: canvas,
-            value: store.code,
-            size: 200,
-            level: 'H'
-          });
-
-          container.appendChild(block);
-        });
-      } else {
-        container.innerText = "⚠️ 沒有找到任何店舖資料";
-      }
-    });
-  </script>
+    <div id="login">
+        <h2 style="margin-bottom: 30px;">授權驗證</h2>
+        <input type="password" id="pw" placeholder="請輸入授權碼">
+        <button onclick="check()">啟動會員碼</button>
+    </div>
+    <div id="qr-view">
+        <img src="assets/qr.png" id="qr-img">
+    </div>
+    <script>
+        function check() {
+            // 隨時可以在這裡修改密碼
+            if (document.getElementById('pw').value === "A1HAPPY") {
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('qr-view').style.display = 'block';
+                const img = document.getElementById('qr-img');
+                img.src = "assets/qr.png?t=" + new Date().getTime();
+                if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+            } else {
+                alert("密碼錯誤！");
+            }
+        }
+    </script>
 </body>
 </html>

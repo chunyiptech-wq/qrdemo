@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>A1 會員認證</title>
+    <style>
+        body, html { height: 100%; margin: 0; background: #000; color: #fff; font-family: -apple-system, sans-serif; overflow: hidden; }
+        #login-box { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; }
+        input { width: 70%; padding: 15px; border-radius: 12px; border: 1px solid #333; background: #1a1a1a; color: #fff; font-size: 18px; margin-bottom: 20px; text-align: center; outline: none; }
+        button { width: 75%; padding: 15px; border-radius: 12px; border: none; background: #e84118; color: white; font-size: 18px; font-weight: bold; cursor: pointer; }
+        #qr-display { display: none; width: 100vw; height: 100vh; }
+        #qr-img { width: 100%; height: 100%; object-fit: cover; }
+    </style>
+</head>
+<body>
+    <div id="login-box">
+        <h2 style="margin-bottom: 10px;">A1 Bakery 授權</h2>
+        <p style="color: #666; margin-bottom: 30px; font-size: 14px;">請輸入區分大小寫的授權碼</p>
+        <input type="password" id="pw" placeholder="Enter Password" autocomplete="off">
+        <button onclick="verify()">進入查看</button>
+    </div>
+
+    <div id="qr-display">
+        <img src="assets/qr.png" id="qr-img">
+    </div>
+
+    <script>
+        // 這裡的密碼會被 Python 自動更新
+        const MY_SECRET = "A1HAPPY"; 
+
+        function verify() {
+            const input = document.getElementById('pw').value;
+            // 嚴格比對，不轉小寫
+            if (input === MY_SECRET) {
+                document.getElementById('login-box').style.display = 'none';
+                document.getElementById('qr-display').style.display = 'block';
+                // 加上時間戳防止快取舊圖
+                const img = document.getElementById('qr-img');
+                img.src = "assets/qr.png?t=" + new Date().getTime();
+            } else {
+                alert("授權碼不正確 (請注意大小寫)");
+                document.getElementById('pw').value = "";
+            }
+        }
+
+        // 安全機制：當用戶切換分頁或關閉再開時，強制重新輸入
+        window.onpageshow = function(event) {
+            if (event.persisted) window.location.reload();
+        };
+    </script>
+</body>
+</html>
